@@ -1,5 +1,4 @@
 import {
-  BadRequestException,
   Body,
   Controller,
   Get,
@@ -7,8 +6,6 @@ import {
   Inject,
   Post,
   Query,
-  UsePipes,
-  ValidationPipe,
   Headers, UseGuards, Redirect
 } from "@nestjs/common";
 import { RegisterDTO } from './DTOs/register/register.dto';
@@ -23,11 +20,12 @@ import { VerifyDeviceDto } from "./DTOs/verify-device/verify-device.dto";
 import { VerifyDeviceResponseDto } from "./DTOs/verify-device/verify-device.response.dto";
 import { ResetPasswordDto } from "./DTOs/reset-password/reset-password.dto";
 import { ResetPasswordResponseDto } from "./DTOs/reset-password/reset-password.response.dto";
-import { ResetPasswordQueryTokenDto } from "./DTOs/reset-password/reset-password-query-token.dto";
-import * as process from "node:process";
 import { ResetPasswordPasswordDto } from "./DTOs/reset-password/reset-password-password.dto";
 import { ResetPasswordTokenType } from "../../common/types/reset-password-token.type";
 import { ResendOtpCodeDto } from "./DTOs/verify-device/resend-otp-code.dto";
+import * as process from "node:process";
+import { ResendOtpCodeResponseDto } from "./DTOs/verify-device/resend-otp-code.response.dto";
+import { CustomValidation } from "../../common/decorators/custom-validation.decorator";
 
 @Controller('auth')
 export class AuthController {
@@ -37,25 +35,7 @@ export class AuthController {
   ) {}
 
   @Post('/register')
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        const formattedErrors = errors.map((error) => ({
-          field: error.property,
-          constraints: Object.values(error.constraints || {}),
-        }));
-
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: formattedErrors,
-        });
-      },
-    }),
-  )
+  @CustomValidation()
   async register(
     @Body() requestBody: RegisterDTO,
   ): Promise<RegisterResponseDto> {
@@ -67,36 +47,18 @@ export class AuthController {
   }
 
   @Get('/verify-account')
+  @Redirect()
   async verifyUserAccount(
     @Query('token') token: string,
-  ): Promise<{ statusCode: number; message: string }> {
-    const response = await this.authService.verifyAccount(token);
+  ): Promise<{ url: string }> {
+    await this.authService.verifyAccount(token);
     return {
-      statusCode: HttpStatus.OK,
-      message: response.message,
+      url: `${process.env.FRONT_END_URL}:${process.env.FRONT_APP_PORT}/auth`,
     };
   }
 
   @Post('/login')
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        const formattedErrors = errors.map((error) => ({
-          field: error.property,
-          constraints: Object.values(error.constraints || {}),
-        }));
-
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: formattedErrors,
-        });
-      },
-    }),
-  )
+  @CustomValidation()
   async login(
     @Body() requestBody: LoginDTO,
     @Headers() headers: Record<string, string>,
@@ -113,25 +75,7 @@ export class AuthController {
 
   @Post('/verify-device')
   @UseGuards(AuthGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        const formattedErrors = errors.map((error) => ({
-          field: error.property,
-          constraints: Object.values(error.constraints || {}),
-        }));
-
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: formattedErrors,
-        });
-      },
-    }),
-  )
+  @CustomValidation()
   async verifyDeviceByOTP(
     @GetRequestData() requestData: VerifyDeviceRequestDataType,
     @Body() requestBody: VerifyDeviceDto,
@@ -147,34 +91,22 @@ export class AuthController {
   }
 
   @Post('/resend/otp')
+  @CustomValidation()
   async resendOTPCode(
     @Body() requestBody: ResendOtpCodeDto,
-  )
+  ): Promise<ResendOtpCodeResponseDto>
   {
-
+    const response = await this.authService.handleResendOTPCode(requestBody);
+    return {
+      statusCode: HttpStatus.OK,
+      message: response.message,
+      token: response.token,
+    };
   }
 
 
   @Post('/ask/reset/password')
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        const formattedErrors = errors.map((error) => ({
-          field: error.property,
-          constraints: Object.values(error.constraints || {}),
-        }));
-
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: formattedErrors,
-        });
-      },
-    }),
-  )
+  @CustomValidation()
   async verifyResetPasswordRequest(
     @Body() requestBody: ResetPasswordDto,
   ):Promise<ResetPasswordResponseDto> {
@@ -187,25 +119,7 @@ export class AuthController {
 
   @Post('/reset/password')
   @UseGuards(AuthGuard)
-  @UsePipes(
-    new ValidationPipe({
-      transform: true,
-      forbidNonWhitelisted: true,
-      whitelist: true,
-      exceptionFactory: (errors) => {
-        const formattedErrors = errors.map((error) => ({
-          field: error.property,
-          constraints: Object.values(error.constraints || {}),
-        }));
-
-        throw new BadRequestException({
-          statusCode: HttpStatus.BAD_REQUEST,
-          message: 'Validation failed',
-          errors: formattedErrors,
-        });
-      },
-    }),
-  )
+  @CustomValidation()
   async resetPassword(
     @Body() requestBody: ResetPasswordPasswordDto,
     @GetRequestData() requestData: ResetPasswordTokenType,

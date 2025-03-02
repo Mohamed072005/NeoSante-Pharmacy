@@ -101,7 +101,7 @@ export class EmailService implements EmailServiceInterface {
       const templateSource = fs.readFileSync(templatePath, 'utf8');
       const template = handlebars.compile(templateSource);
 
-      const verificationURL = `${process.env.FRONT_END_URL}:${process.env.FRONT_APP_PORT}/auth/reset/password/${token}`;
+      const verificationURL = `${process.env.FRONT_END_URL}:${process.env.FRONT_APP_PORT}/auth/reset-password/${token}`;
       const html = template({
         name,
         resetUrl: verificationURL,
@@ -110,7 +110,7 @@ export class EmailService implements EmailServiceInterface {
       const mailOptions = {
         from: process.env.EMAIL_USER,
         to: email,
-        subject: 'Verify Your Email',
+        subject: 'Reset Password Email',
         html: html,
       };
 

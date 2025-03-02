@@ -23,8 +23,8 @@ export class RegisterDTO {
 
   @IsNotEmpty()
   @IsString()
-  @MinLength(8)
-  @MaxLength(13)
+  @MinLength(10)
+  @MaxLength(15)
   @Matches(/^(?:\+212|0)([5-7]\d{8})$/, { message: 'Invalid phone number format' })
   phone_number: string;
 

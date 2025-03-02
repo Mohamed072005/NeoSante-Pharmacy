@@ -66,7 +66,7 @@ export class AuthService implements AuthServiceInterface {
     return { message: 'Register Success and Verification sent' };
   }
 
-  async verifyAccount(token: string): Promise<{ message: string }> {
+  async verifyAccount(token: string): Promise<void> {
     if (!token || token === '')
       throw new HttpException('Token is required', HttpStatus.BAD_REQUEST);
     const decoded = this.jwtHelper.VerifyJWTToken(token);
@@ -75,7 +75,6 @@ export class AuthService implements AuthServiceInterface {
     if (!user) throw new HttpException('User Not Found', HttpStatus.NOT_FOUND);
     user.verified_at = new Date();
     await user.save();
-    return { message: 'Account Verified Successfully' };
   }
 
   async handleLogin(loginDTO: LoginDTO, userAgent: string,): Promise<{ message: string; token: string; withOTP: boolean, user_id: string }> {
