@@ -21,6 +21,7 @@ import { ResetPasswordTokenType } from "../../../common/types/reset-password-tok
 import { ResetPasswordPasswordDto } from "../DTOs/reset-password/reset-password-password.dto";
 import { agent } from "supertest";
 import { ResendOtpCodeDto } from "../DTOs/verify-device/resend-otp-code.dto";
+import { RolePermissionType } from "../../../common/types/role-permission.type";
 
 @Injectable()
 export class AuthService implements AuthServiceInterface {
@@ -101,7 +102,8 @@ export class AuthService implements AuthServiceInterface {
       case AgentStatusEnum.NOT_VERIFIED_AGENT:
         return this.sendOtpAndGenerateToken(user,null, null,'OTP sent to your email. Please verify your device.');
       case AgentStatusEnum.VERIFIED_AGENT:
-        return this.generateLoginToken(user._id.toString());
+        const user_role = await this.roleRepository.findRoleById(user.role_id);
+        return this.generateLoginToken(user._id.toString(), user_role.role_name, user_role.permissions);
       default:
         throw new HttpException(
           'Invalid agent status',
@@ -126,8 +128,8 @@ export class AuthService implements AuthServiceInterface {
     return { message: message, token: jwtToken.token, withOTP: true, user_id: user._id.toString() };
   }
 
-  private async generateLoginToken(user_id: string,): Promise<{ message: string; token: string; withOTP: boolean, user_id: string }> {
-    const jwtToken = await this.jwtHelper.generateJWTToken({ user_id: user_id },'3d');
+  private async generateLoginToken(user_id: string, user_role: string, user_permissions: RolePermissionType[]): Promise<{ message: string; token: string; withOTP: boolean, user_id: string }> {
+    const jwtToken = await this.jwtHelper.generateJWTToken({ user_id: user_id, user_role, user_permissions },'3d');
     return {
       message: 'Login successful',
       token: jwtToken.token,
@@ -148,7 +150,8 @@ export class AuthService implements AuthServiceInterface {
       user.markModified('agents');
       await user.save();
     }
-    return await this.generateLoginToken(user_id.toString());
+    const user_role = await this.roleRepository.findRoleById(user.role_id);
+    return await this.generateLoginToken(user_id.toString(), user_role.role_name, user_role.permissions);
   }
 
   private findUserAgent(user: UserDocument, userAgent: string) {

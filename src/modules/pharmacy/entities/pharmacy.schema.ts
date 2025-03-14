@@ -1,11 +1,9 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { Document } from 'mongoose';
+import { Document, HydratedDocument, Types } from "mongoose";
 
-export type pharmacyDocument = Pharmacy & Document;
+export type PharmacyDocument = HydratedDocument<Pharmacy> & Document;
 
 class Address {
-  @Prop({ required: true })
-  country: string;
 
   @Prop({ required: true })
   city: string;
@@ -15,8 +13,8 @@ class Address {
 }
 
 class Helpers {
-  @Prop({ required: true })
-  userId: string;
+  @Prop({ required: true, unique: true })
+  email: string;
 
   @Prop({ type: [String], default: [] })
   permissions: string[];
@@ -33,13 +31,21 @@ class Certifications {
   date: string;
 }
 
+class DailyWorkingHours {
+  @Prop({ required: true })
+  open: string;
+
+  @Prop({ required: true })
+  close: string;
+}
+
 @Schema({ timestamps: true })
 export class Pharmacy {
   @Prop({ required: true })
   name: string;
 
-  @Prop({ required: true })
-  userId: string;
+  @Prop({ required: true, type: Types.ObjectId, ref: 'User' })
+  userId: Types.ObjectId;
 
   @Prop({ required: true })
   address: Address;
@@ -55,7 +61,7 @@ export class Pharmacy {
     type: [Helpers],
     validate: {
       validator: function (helpers: Helpers[]) {
-        const userIds = helpers.map((helper) => helper.userId);
+        const userIds = helpers.map((helper) => helper.email);
         return new Set(userIds).size === userIds.length;
       },
       message: 'Each helper must have a unique userId',
@@ -65,11 +71,28 @@ export class Pharmacy {
 
   @Prop({ type: Date, default: null })
   verifiedAt: Date | null;
+
+  @Prop({
+    type: DailyWorkingHours,
+    default: {
+      monday: { open: '09:00', close: '18:00' },
+      tuesday: { open: '09:00', close: '18:00' },
+      wednesday: { open: '09:00', close: '18:00' },
+      thursday: { open: '09:00', close: '18:00' },
+      friday: { open: '09:00', close: '18:00' },
+      saturday: { open: '09:00', close: '18:00' },
+      sunday: { open: '09:00', close: '18:00' },
+    },
+  })
+  workingHours: DailyWorkingHours;
+
+  @Prop({ type: Boolean, default: false })
+  weekendPermanence: boolean;
 }
 
 export const PharmacySchema = SchemaFactory.createForClass(Pharmacy);
 
 PharmacySchema.index({ userId: 1 });
 PharmacySchema.index({ name: 1 });
-PharmacySchema.index({ 'address.city': 1, 'address.country': 1 });
-PharmacySchema.index({ 'helpers.userId': 1 }, { unique: true, sparse: true });
+PharmacySchema.index({ 'address.city': 1, 'address.street': 1 });
+PharmacySchema.index({ 'helpers.email': 1 }, { unique: true, sparse: true });
