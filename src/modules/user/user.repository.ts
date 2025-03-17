@@ -1,4 +1,4 @@
-import { HttpException, HttpStatus, Injectable } from "@nestjs/common";
+import { BadRequestException, HttpException, HttpStatus, Injectable } from "@nestjs/common";
 import { UserRepositoryInterface } from "./interfaces/user.repository.interface";
 import { User, UserDocument } from "./entities/user.entity";
 import { InjectModel } from "@nestjs/mongoose";
@@ -58,6 +58,7 @@ export class UserRepository implements UserRepositoryInterface {
 
   async getUserById(userId: Types.ObjectId): Promise<UserDocument> {
     try {
+      console.log(userId);
       return await this.userModel.findOne({ _id: userId }).exec();
     } catch (error) {
       throw new HttpException(
@@ -70,9 +71,20 @@ export class UserRepository implements UserRepositoryInterface {
   async findUserByEmail(email: string): Promise<UserDocument> {
     try {
       return await this.userModel.findOne({ email: email }).exec();
-    }catch (error) {
+    } catch (error) {
       throw new HttpException(
         'Failed to fetch user',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getUsersByRole(role_id: Types.ObjectId): Promise<UserDocument> {
+    try {
+      return await this.userModel.findOne({ role_id: role_id }).exec();
+    } catch (error) {
+      throw new HttpException(
+        'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

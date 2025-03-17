@@ -5,7 +5,7 @@ export type RoleDocument = HydratedDocument<Role> & Document;
 
 class Permissions {
   @Prop({ required: true })
-  permissions: string;
+  permission: string;
 }
 
 @Schema()

@@ -7,4 +7,5 @@ export interface UserRepositoryInterface {
   createUser(registerDTO: RegisterDTO): Promise<UserDocument>
   getUserById(userId: Types.ObjectId): Promise<UserDocument>
   findUserByEmail(email: string): Promise<UserDocument>
+  getUsersByRole(role_id: Types.ObjectId): Promise<UserDocument>
 }

@@ -97,7 +97,7 @@ export class EmailService implements EmailServiceInterface {
       const templatePath = path.join(
         __dirname,
         './templates/reset-password-email.handlebars',
-      )
+      );
       const templateSource = fs.readFileSync(templatePath, 'utf8');
       const template = handlebars.compile(templateSource);
 
@@ -115,10 +115,81 @@ export class EmailService implements EmailServiceInterface {
       };
 
       await this.transporter.sendMail(mailOptions);
-    }catch (error) {
+    } catch (error) {
       console.log(error);
       console.error('Failed to send reset password email:', error);
       throw new Error('Failed to send reset password email');
+    }
+  }
+
+  async sendNewPharmacyHiringToAdmin(
+    pharmacyName: string,
+    pharmacyOwner: string,
+    pharmacyLocation: string,
+    contactEmail: string,
+    contactPhone: string,
+    adminEmail: string,
+  ): Promise<void> {
+    try {
+      const templatePath = path.join(
+        __dirname,
+        './templates/create-pharmacy-hiring.handlebars',
+      );
+      const templateSource = fs.readFileSync(templatePath, 'utf8');
+      const template = handlebars.compile(templateSource);
+
+      const adminDashboardUrl = `${process.env.FRONT_END_URL}:${process.env.FRONT_APP_PORT}/dashboard/admin/pharmacies`;
+      const html = template({
+        pharmacyName,
+        pharmacyOwner,
+        pharmacyLocation,
+        contactEmail,
+        contactPhone,
+        adminDashboardUrl: adminDashboardUrl,
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: adminEmail,
+        subject: "New Pharmacy Waiting You're improvement",
+        html: html,
+      };
+
+      await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.log(error);
+      console.error('Failed to send New Pharmacy hiring email:', error);
+      throw new Error('Failed to send New Pharmacy hiring email');
+    }
+  }
+
+  async sendPharmacyApprovalEmail(email: string, name: string): Promise<void> {
+    try {
+      const templatePath = path.join(
+        __dirname,
+        './templates/pharmacy-approval.handlebars',
+      );
+      const templateSource = fs.readFileSync(templatePath, 'utf8');
+      const template = handlebars.compile(templateSource);
+
+      const verificationURL = `${process.env.FRONT_END_URL}:${process.env.FRONT_APP_PORT}/auth`;
+      const html = template({
+        UserName: name,
+        loginUrl: verificationURL,
+      });
+
+      const mailOptions = {
+        from: process.env.EMAIL_USER,
+        to: email,
+        subject: 'Pharmacy Approval',
+        html: html,
+      };
+
+      await this.transporter.sendMail(mailOptions);
+    } catch (error) {
+      console.log(error);
+      console.error('Failed to send pharmacy approval email:', error);
+      throw new Error('Failed to send pharmacy approval email');
     }
   }
 }
