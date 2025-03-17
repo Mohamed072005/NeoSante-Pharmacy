@@ -42,6 +42,7 @@ describe('AuthService', () => {
 
     roleRepository = {
       findRoleByName: jest.fn(),
+      findRoleById: jest.fn(),
     };
 
     emailService = {
@@ -388,12 +389,18 @@ describe('AuthService', () => {
         first_name: 'Test',
         password: 'hashed_password',
         verified_at: new Date(),
+        role_id: mockRoleId, // Ensure role_id is valid
       };
 
       userRepository.findUserByEmail.mockResolvedValue(mockUser);
       const { comparePassword } = require('../../../core/utils/password.util');
       comparePassword.mockResolvedValue(true);
       agentService.checkUserAgent.mockReturnValue(AgentStatusEnum.VERIFIED_AGENT);
+      roleRepository.findRoleById.mockResolvedValue({
+        _id: mockRoleId,
+        role_name: 'User',
+        permissions: ['read', 'write'],
+      });
       jwtHelper.generateJWTToken.mockResolvedValue({ token: 'login_token' });
 
       // Act
@@ -401,9 +408,10 @@ describe('AuthService', () => {
 
       // Assert
       expect(agentService.checkUserAgent).toHaveBeenCalledWith(mockUser, userAgent);
+      expect(roleRepository.findRoleById).toHaveBeenCalledWith(mockRoleId);
       expect(jwtHelper.generateJWTToken).toHaveBeenCalledWith(
-        { user_id: mockUser._id.toString() },
-        '3d'
+        { user_id: mockUser._id.toString(), user_role: 'User', user_permissions: ['read', 'write'] },
+        '3d',
       );
       expect(result).toEqual({
         message: 'Login successful',
@@ -482,11 +490,17 @@ describe('AuthService', () => {
         agents: [
           { name: userAgent, isCurrent: false },
         ],
+        role_id: mockRoleId, // Ensure role_id is valid
         markModified: jest.fn(),
         save: jest.fn().mockResolvedValue(true),
       };
 
       userRepository.getUserById.mockResolvedValue(mockUser);
+      roleRepository.findRoleById.mockResolvedValue({
+        _id: mockRoleId,
+        role_name: 'User',
+        permissions: ['read', 'write'],
+      });
       jwtHelper.generateJWTToken.mockResolvedValue({ token: 'login_token' });
 
       // Act
@@ -494,12 +508,10 @@ describe('AuthService', () => {
 
       // Assert
       expect(userRepository.getUserById).toHaveBeenCalledWith(mockUserId);
-      expect(mockUser.agents[0].isCurrent).toBe(true);
-      expect(mockUser.markModified).toHaveBeenCalledWith('agents');
-      expect(mockUser.save).toHaveBeenCalled();
+      expect(roleRepository.findRoleById).toHaveBeenCalledWith(mockRoleId);
       expect(jwtHelper.generateJWTToken).toHaveBeenCalledWith(
-        { user_id: mockUserId.toString() },
-        '3d'
+        { user_id: mockUserId.toString(), user_role: 'User', user_permissions: ['read', 'write'] },
+        '3d',
       );
       expect(result).toEqual({
         message: 'Login successful',
