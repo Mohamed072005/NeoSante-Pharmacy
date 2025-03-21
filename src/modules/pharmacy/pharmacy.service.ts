@@ -125,10 +125,8 @@ export class PharmacyService implements PharmacyServiceInterface {
         'You are not authorized to update this pharmacy.',
       );
     const updateData: Partial<Pharmacy> = {};
-    // Basic fields
     if (updatePharmacyDTO.name) updateData.name = updatePharmacyDTO.name;
     if (updatePharmacyDTO.image) updateData.image = updatePharmacyDTO.image;
-    // Handle address restructuring
     if (updatePharmacyDTO.city || updatePharmacyDTO.street) {
       updateData.address = {
         ...(pharmacy.address || {}),
@@ -149,11 +147,18 @@ export class PharmacyService implements PharmacyServiceInterface {
         }),
       );
     }
+
+    if (updatePharmacyDTO.workingHours) {
+      updateData.workingHours = {
+        ...(pharmacy.workingHours || {}),
+        ...updatePharmacyDTO.workingHours,
+      };
+    }
+    console.log(updatePharmacyDTO.workingHours);
     const updatedPharmacy = await this.pharmacyRepository.updatePharmacy(
       pharmacyObjectId,
       updateData,
     );
-    console.log(updatedPharmacy);
     return {
       message: 'Pharmacy updated successfully.',
       pharmacy: updatedPharmacy as Pharmacy,

@@ -162,4 +162,15 @@ export class PharmacyRepository implements PharmacyRepositoryInterface {
       );
     }
   }
+
+  async getPharmacistPharmaciesWithoutPagination(user_id: Types.ObjectId): Promise<PharmacyDocument[]> {
+    try {
+      return await this.pharmacyModel.find({ userId: user_id }).exec();
+    }catch (e) {
+      throw new HttpException(
+        `Failed to create pharmacy: ${e.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

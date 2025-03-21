@@ -162,7 +162,7 @@ export class PharmacyController {
 
   @Patch('/update/pharmacy/:pharmacy_id')
   @UseGuards(AuthGuard, PharmacistGuard)
-  // @CustomValidation()
+  @CustomValidation()
   @UseInterceptors(
     FileFieldsInterceptor(
       [
@@ -181,9 +181,8 @@ export class PharmacyController {
     @Param() param: GetPharmacyDto,
     @Body() updatePharmacyDto: PharmacyDto,
     @GetRequestData() requestData: PharmacyRequestDataType,
-  ): Promise<PharmacyResponseDto> {
+  )  {
     try {
-      console.log(files);
       const imageFile = files.image?.[0];
       const certificationFiles = files.certificationImages || [];
       if (imageFile) {
