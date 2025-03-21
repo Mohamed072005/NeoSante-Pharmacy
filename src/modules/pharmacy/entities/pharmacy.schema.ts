@@ -39,6 +39,29 @@ class DailyWorkingHours {
   close: string;
 }
 
+class WorkingHours {
+  @Prop({ required: true, type: DailyWorkingHours })
+  monday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  tuesday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  wednesday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  thursday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  friday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  saturday: DailyWorkingHours;
+
+  @Prop({ required: true, type: DailyWorkingHours })
+  sunday: DailyWorkingHours;
+}
+
 @Schema({ timestamps: true })
 export class Pharmacy {
   @Prop({ required: true })
@@ -73,7 +96,7 @@ export class Pharmacy {
   verifiedAt: Date | null;
 
   @Prop({
-    type: DailyWorkingHours,
+    type: WorkingHours,
     default: {
       monday: { open: '09:00', close: '18:00' },
       tuesday: { open: '09:00', close: '18:00' },
@@ -84,7 +107,7 @@ export class Pharmacy {
       sunday: { open: '09:00', close: '18:00' },
     },
   })
-  workingHours: DailyWorkingHours;
+  workingHours: WorkingHours;
 
   @Prop({ type: Boolean, default: false })
   weekendPermanence: boolean;

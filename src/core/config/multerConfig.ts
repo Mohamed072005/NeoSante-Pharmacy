@@ -7,7 +7,6 @@ export const multerConfig = {
     fileSize: 5 * 1024 * 1024,
   },
   fileFilter: (req, file, cb) => {
-    console.log('File received:', file.originalname, 'mimetype:', file.mimetype);
     const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'image/webp'];
     if (allowedMimeTypes.includes(file.mimetype)) {
       cb(null, true); // Accept the file

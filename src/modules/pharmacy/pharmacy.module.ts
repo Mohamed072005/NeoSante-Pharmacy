@@ -32,5 +32,8 @@ import { S3Service } from "../../core/services/s3.service";
     JwtHelper,
     S3Service
   ],
+  exports: [
+    'PharmacyRepositoryInterface'
+  ],
 })
 export class PharmacyModule {}
