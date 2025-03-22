@@ -1,35 +1,56 @@
-version: '3.8'
+name: Backend Tests and Docker Build
 
-services:
-  app:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    ports:
-      - "5000:${PORT:-5000}"
-    environment:
-      PORT: ${PORT}
-      DB_URI: mongodb://mongo:27017/neosante-pharmacy
-      EMAIL_USER: ${EMAIL_USER}
-      EMAIL_PASSWORD: ${EMAIL_PASSWORD}
-      SECRET_KEY: ${SECRET_KEY}
-      BACK_END_URL: ${BACK_END_URL}
-      FRONT_END_URL: ${FRONT_END_URL}
-      FRONT_APP_PORT: ${FRONT_APP_PORT}
-    volumes:
-      - .:/app
-      - /app/node_modules
-    depends_on:
-      - mongo
-    restart: unless-stopped
+on:
+  pull_request:
+    branches:
+      - develop
+      - main
 
-  mongo:
-    image: mongo:latest
-    volumes:
-      - mongo-data:/data/db
-    ports:
-      - "27017:27017"
-    restart: unless-stopped
+jobs:
+  test-backend:
+    runs-on: ubuntu-latest
 
-volumes:
-  mongo-data:
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 20.17.0
+
+      - name: Install dependencies
+        working-directory: ./
+        run: npm install --legacy-peer-deps
+
+      - name: Run tests
+        working-directory: ./
+        run: npm run test
+  
+  build-and-push:
+    needs: test-backend
+    runs-on: ubuntu-latest
+    # Now we're running this on pull requests to develop or main branches
+    if: github.event_name == 'pull_request' && (github.base_ref == 'develop' || github.base_ref == 'main')
+    
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v2
+
+      - name: Login to DockerHub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v4
+        with:
+          context: .
+          push: true
+          tags: |
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:pr-${{ github.event.pull_request.number }}
+            ${{ secrets.DOCKERHUB_USERNAME }}/backend:${{ github.sha }}
