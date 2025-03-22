@@ -18,7 +18,6 @@ async function bootstrap() {
   app.useGlobalInterceptors(new RequestLogger());
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
   await app.listen(process.env.PORT ?? 5000);
-
 }
 
 bootstrap();
