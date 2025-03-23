@@ -2,7 +2,7 @@ import {
   Body,
   Controller, Get,
   HttpStatus,
-  Inject,
+  Inject, Param,
   Post,
   UploadedFile,
   UploadedFiles,
@@ -21,12 +21,18 @@ import { S3Service } from "../../core/services/s3.service";
 import { GetRequestData } from "../../common/decorators/get-request-data.decorator";
 import { ProductRequestDataType } from "../../common/types/product-request-data.type";
 import { Product } from "./entities/product.schema";
+import { GetProductParamDto } from "./DTOs/get-product-param.dto";
+import { ProductRepositoryInterface } from "./interfaces/product.repository.interface";
+import { toObjectId } from "../../common/transformers/object.id.transformer";
 
 @Controller('product')
 export class ProductController {
 
   constructor(
-    @Inject('ProductServiceInterface') private readonly productService: ProductServiceInterface,
+    @Inject('ProductServiceInterface')
+    private readonly productService: ProductServiceInterface,
+    @Inject('ProductRepositoryInterface')
+    private readonly productRepository: ProductRepositoryInterface,
     private readonly s3Service: S3Service
   ) {}
 
@@ -56,6 +62,7 @@ export class ProductController {
         imageKey,
       );
     }
+    console.log(productDto);
     const response = await this.productService.handleCreateProduct(productDto);
     return {
       message: response.message,
@@ -72,6 +79,19 @@ export class ProductController {
     return {
       statusCode: HttpStatus.OK,
       products: response.products,
+    }
+  }
+
+  @Get('/pharmacy/product/:product_id')
+  @UseGuards(AuthGuard, PharmacistGuard, CheckUserGuard)
+  async getPharmacyProductById(
+    @Param() params: GetProductParamDto
+  ): Promise< { product: Product, statusCode: number }> {
+    const productObjectId = toObjectId(params.product_id);
+    const product = await this.productRepository.getPharmacyProductById(productObjectId)
+    return {
+      statusCode: HttpStatus.OK,
+      product: product,
     }
   }
 }

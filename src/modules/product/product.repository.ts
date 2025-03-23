@@ -41,6 +41,7 @@ export class ProductRepository implements ProductRepositoryInterface {
         ...productDto,
         category: categoryId,
         pharmacyId: pharmacyId,
+        requiresPrescription: productDto.requiresPrescription == "true",
       });
       await newProduct.save();
     } catch (err) {
@@ -57,12 +58,27 @@ export class ProductRepository implements ProductRepositoryInterface {
 
   async getProductsByPharmaciesIds(pharmacyIds: Types.ObjectId[]): Promise<Product[]> {
     try {
-      return await this.productModel.find({
-        pharmacyId: { $in: pharmacyIds },
-      })
-        .populate("pharmacyId", "name address")
-        .populate("category", "category_name")
-        .lean()
+      return await this.productModel
+        .find({
+          pharmacyId: { $in: pharmacyIds },
+        })
+        .populate('pharmacyId', 'name address')
+        .populate('category', 'category_name')
+        .lean();
+    } catch (err) {
+      throw new HttpException(
+        `Failed to create pharmacy: ${err.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+  
+  async getPharmacyProductById(product_id: Types.ObjectId): Promise<Product> {
+    try {
+      return await this.productModel.findOne({ _id: product_id })
+        .populate('pharmacyId', 'name address')
+        .populate('category', 'category_name')
+        .exec();
     }catch (err) {
       throw new HttpException(
         `Failed to create pharmacy: ${err.message}`,

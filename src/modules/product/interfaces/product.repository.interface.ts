@@ -6,4 +6,5 @@ export interface ProductRepositoryInterface {
   findProductByPharmacyIdAndBarcodeAndName(pharmacyId: Types.ObjectId, barcode: string, name: string): Promise<boolean>;
   createProduct(productDto: ProductDto, pharmacyId: Types.ObjectId, categoryId: Types.ObjectId): Promise<void>;
   getProductsByPharmaciesIds(pharmacyIds: Types.ObjectId[]): Promise<Product[]>;
+  getPharmacyProductById(product_id: Types.ObjectId): Promise<Product>;
 }

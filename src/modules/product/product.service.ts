@@ -27,7 +27,7 @@ export class ProductService implements ProductServiceInterface {
       productDto.alternatives = JSON.parse(productDto.alternatives);
     }
     const categoryObjectId = toObjectId(productDto.category);
-    await this.productRepository.createProduct(productDto, pharmacyObjectId, categoryObjectId,);
+    await this.productRepository.createProduct(productDto, pharmacyObjectId, categoryObjectId);
     return { message: 'Product created' };
   }
 
