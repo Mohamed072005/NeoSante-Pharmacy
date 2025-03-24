@@ -2,8 +2,8 @@ import {
   Body,
   Controller, Get,
   HttpStatus,
-  Inject, Param,
-  Post,
+  Inject, Param, Patch,
+  Post, Put, Query,
   UploadedFile,
   UploadedFiles,
   UseGuards,
@@ -62,7 +62,6 @@ export class ProductController {
         imageKey,
       );
     }
-    console.log(productDto);
     const response = await this.productService.handleCreateProduct(productDto);
     return {
       message: response.message,
@@ -92,6 +91,59 @@ export class ProductController {
     return {
       statusCode: HttpStatus.OK,
       product: product,
+    }
+  }
+
+  @Patch('/update/product/:product_id')
+  @UseGuards(AuthGuard, PharmacistGuard, CheckUserGuard)
+  @CustomValidation()
+  @UseInterceptors(
+    FileFieldsInterceptor(
+      [
+        { name: 'image', maxCount: 1 }
+      ],
+      multerConfig
+    )
+  )
+  async updatePharmacyProduct(
+    @UploadedFiles()
+    files: {
+      image?: Express.Multer.File[]
+    },
+    @Body() productDto: ProductDto,
+    @Param() param: GetProductParamDto
+  ) {
+    const imageFile = files.image?.[0];
+    if (imageFile) {
+      const imageKey = `product/image/${Date.now()}-${imageFile.originalname}`;
+      productDto.image = await this.s3Service.uploadFile(
+        imageFile,
+        imageKey,
+      );
+    }
+    const response = await this.productService.handleUpdateProduct(productDto, param.product_id);
+    return {
+      statusCode: HttpStatus.ACCEPTED,
+      product: response.product,
+      message: response.message,
+    }
+  }
+
+  @Get('/get/products')
+  async getProductsForClients (
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 10,
+    @Query('search') search?: string,
+    @Query('category') category?: string,
+    @Query('inStock') inStock?: string,
+    @Query('prescriptionRequired') prescriptionRequired?: string,
+  ) {
+    const inStockFilter = inStock ? inStock === 'true' : undefined;
+    const prescriptionFilter = prescriptionRequired ? prescriptionRequired === 'true' : undefined;
+    const response = await this.productRepository.fetchProducts(page, limit, search, category, inStockFilter, prescriptionFilter);
+    return {
+      statusCode: HttpStatus.OK,
+      products: response,
     }
   }
 }

@@ -162,7 +162,7 @@ export class PharmacyController {
 
   @Patch('/update/pharmacy/:pharmacy_id')
   @UseGuards(AuthGuard, PharmacistGuard)
-  @CustomValidation()
+  // @CustomValidation()
   @UseInterceptors(
     FileFieldsInterceptor(
       [
