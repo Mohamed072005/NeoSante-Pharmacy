@@ -154,9 +154,9 @@ export class ProductRepository implements ProductRepositoryInterface {
       // Stock filter
       if (inStock !== undefined) {
         if (inStock) {
-          query.stock = { $gt: 0 }; // In stock
+          query.stock = { $gt: 0 };
         } else {
-          query.stock = { $lte: 0 }; // Out of stock
+          query.stock = { $lte: 0 };
         }
       }
 
