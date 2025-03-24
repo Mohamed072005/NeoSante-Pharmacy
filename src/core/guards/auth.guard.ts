@@ -11,7 +11,6 @@ export class AuthGuard implements CanActivate {
         if (!request.headers.authorization.startsWith('Bearer ')) throw new UnauthorizedException('Invalid authorization format');
         const token = request.headers.authorization.split(' ')[1];
         if(!token || token === '') throw new UnauthorizedException('Token not provided');
-
         try{
             const data = this.jwtService.VerifyJWTToken(token);
             request.data = data;

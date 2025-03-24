@@ -48,10 +48,9 @@ export class ProductDto {
   @IsOptional()
   alternatives?: string;
 
-  @IsBoolean()
-  @Type(() => Boolean)
+  @IsString()
   @IsNotEmpty()
-  requiresPrescription: boolean;
+  requiresPrescription: string;
 
   @IsDate()
   @Type(() => Date)

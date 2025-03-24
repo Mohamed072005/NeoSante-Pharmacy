@@ -173,4 +173,15 @@ export class PharmacyRepository implements PharmacyRepositoryInterface {
       );
     }
   }
+
+  async getPharmacistPharmacy(pharmacy_id: Types.ObjectId, user_id: Types.ObjectId): Promise<PharmacyDocument> {
+    try {
+      return await this.pharmacyModel.findOne({ userId: user_id, _id: pharmacy_id }).exec();
+    }catch (e){
+      throw new HttpException(
+        `Failed to create pharmacy: ${e.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
 }

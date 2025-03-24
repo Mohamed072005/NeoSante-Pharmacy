@@ -11,4 +11,5 @@ export interface PharmacyRepositoryInterface {
   updatePharmacy(pharmacy_id: Types.ObjectId, updatePharmacyDTO: Partial<Pharmacy>): Promise<PharmacyDocument>;
   deletePharmacy(pharmacy_id: Types.ObjectId): Promise<PharmacyDocument>;
   getPharmacistPharmaciesWithoutPagination(user_id: Types.ObjectId): Promise<PharmacyDocument[]>;
+  getPharmacistPharmacy(pharmacy_id: Types.ObjectId, user_id: Types.ObjectId): Promise<PharmacyDocument>;
 }
