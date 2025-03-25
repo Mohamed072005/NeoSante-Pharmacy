@@ -20,11 +20,9 @@ jobs:
           node-version: 20.17.0
 
       - name: Install dependencies
-        working-directory: ./NeoSante-Pharmacy  # Specify correct path
         run: npm install --legacy-peer-deps
 
       - name: Run tests
-        working-directory: ./NeoSante-Pharmacy  # Specify correct path
         run: npm run test
 
   build-and-push:
@@ -48,7 +46,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: ./NeoSante-Pharmacy  # Specify correct context
+          context: .
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/backend:pr-${{ github.event.pull_request.number }}
