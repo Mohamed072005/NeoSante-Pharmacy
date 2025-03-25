@@ -47,6 +47,8 @@ export class PharmacyRepository implements PharmacyRepositoryInterface {
         address: {
           street: createPharmacyDto.street,
           city: createPharmacyDto.city,
+          lat: createPharmacyDto.lat,
+          lng: createPharmacyDto.lng,
         },
         userId: user_id,
         certifications: createPharmacyDto.certifications,
@@ -181,6 +183,39 @@ export class PharmacyRepository implements PharmacyRepositoryInterface {
       throw new HttpException(
         `Failed to create pharmacy: ${e.message}`,
         HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async findPharmacies(searchQuery: string): Promise<PharmacyDocument[]> {
+    try {
+      const query: any = {
+        verifiedAt: { $ne: null }
+      };
+      if (searchQuery) {
+        query.$or = [
+          { name: { $regex: searchQuery, $options: 'i' } },
+          { 'address.city' : { $regex: searchQuery, $options: 'i' } },
+          { 'address.street' : { $regex: searchQuery, $options: 'i' } },
+        ]
+      }
+
+      return await this.pharmacyModel.find(query).exec();
+    }catch (e){
+      throw new HttpException(
+        `Failed to create pharmacy: ${e.message}`,
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
+  }
+
+  async getUserPharmaciesCount(user_id: Types.ObjectId): Promise<number> {
+    try {
+       return await this.pharmacyModel.find({ userId: user_id }).countDocuments().exec();
+    }catch (e) {
+      throw new HttpException(
+          `Failed to create pharmacy: ${e.message}`,
+          HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
   }

@@ -7,4 +7,5 @@ export interface PharmacyServiceInterface {
   handleApprovePendingPharmacy(id: string): Promise<{ message: string, pharmacy: Pharmacy }>;
   handleUpdatePharmacy(user_id: string, pharmacy_id: string, updatePharmacyDTO: PharmacyDto): Promise<{ message: string, pharmacy: Pharmacy }>;
   handleDeletePharmacy(user_id: string, pharmacy_id: string): Promise<{ message: string, pharmacy: Pharmacy }>;
+  handleFindPharmacies(search: string, openNow: boolean): Promise<Pharmacy[]>;
 }

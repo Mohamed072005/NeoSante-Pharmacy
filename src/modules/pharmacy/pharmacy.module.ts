@@ -9,6 +9,7 @@ import { PharmacyRepository } from "./pharmacy.repository";
 import { EmailModule } from "../email/email.module";
 import { RoleModule } from "../role/role.module";
 import { S3Service } from "../../core/services/s3.service";
+import { PharmacyHelper } from "./helpers/pharmacy.helper";
 
 @Module({
   imports: [
@@ -30,7 +31,8 @@ import { S3Service } from "../../core/services/s3.service";
       useClass: PharmacyRepository
     },
     JwtHelper,
-    S3Service
+    S3Service,
+    PharmacyHelper
   ],
   exports: [
     'PharmacyRepositoryInterface'

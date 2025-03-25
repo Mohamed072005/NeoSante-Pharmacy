@@ -21,7 +21,7 @@ import { CreatePharmacyResponseDto } from "./DTOs/create.pharmacy.response.dto";
 import { S3Service } from "../../core/services/s3.service";
 import { PharmacyRepositoryInterface } from "./interfaces/pharmacy.repository.interface";
 import { AdminGuard } from "../../core/guards/admin.guard";
-import { PharmacyDocument } from "./entities/pharmacy.schema";
+import { Pharmacy, PharmacyDocument } from "./entities/pharmacy.schema";
 import { GetPharmacyDto } from "./DTOs/get.pharmacy.dto";
 import { PharmacyResponseDto } from "./DTOs/pharmacy.response.dto";
 import { GetPharmaciesAdminResponseDto } from "./DTOs/get.pharmacies.admin.response.dto";
@@ -232,6 +232,20 @@ export class PharmacyController {
       message: response.message,
       pharmacy: response.pharmacy,
       statusCode: HttpStatus.OK,
+    }
+  }
+
+  @Get('/find/pharmacies')
+  async findPharmacies(
+   @Query('search') search: string,
+   @Query('openNow') openNow: string
+  ): Promise<{ statusCode: number, message: string, pharmacies: Pharmacy[] }> {
+    const openNowBool = openNow === 'true';
+    const response = await this.pharmacyService.handleFindPharmacies(search, openNowBool);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'Pharmacies fetched successfully',
+      pharmacies: response as Pharmacy[],
     }
   }
 

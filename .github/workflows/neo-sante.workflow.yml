@@ -20,17 +20,16 @@ jobs:
           node-version: 20.17.0
 
       - name: Install dependencies
-        working-directory: ./
+        working-directory: ./NeoSante-Pharmacy  # Specify correct path
         run: npm install --legacy-peer-deps
 
       - name: Run tests
-        working-directory: ./
+        working-directory: ./NeoSante-Pharmacy  # Specify correct path
         run: npm run test
 
   build-and-push:
     needs: test-backend
     runs-on: ubuntu-latest
-    # Now we're running this on pull requests to develop or main branches
     if: github.event_name == 'pull_request' && (github.base_ref == 'develop' || github.base_ref == 'main')
 
     steps:
@@ -49,7 +48,7 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v4
         with:
-          context: .
+          context: ./NeoSante-Pharmacy  # Specify correct context
           push: true
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/backend:pr-${{ github.event.pull_request.number }}

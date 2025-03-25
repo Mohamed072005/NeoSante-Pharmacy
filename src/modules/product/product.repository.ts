@@ -13,11 +13,7 @@ export class ProductRepository implements ProductRepositoryInterface {
     private readonly productModel: Model<Product>,
   ) {}
 
-  async findProductByPharmacyIdAndBarcodeAndName(
-    pharmacyId: Types.ObjectId,
-    barcode: string,
-    name: string,
-  ): Promise<boolean> {
+  async findProductByPharmacyIdAndBarcodeAndName(pharmacyId: Types.ObjectId, barcode: string, name: string,): Promise<boolean> {
     try {
       const product = await this.productModel.findOne({
         pharmacyId: pharmacyId,

@@ -10,6 +10,12 @@ class Address {
 
   @Prop({ required: true })
   street: string;
+
+  @Prop({ required: true })
+  lng: Number;
+
+  @Prop({ required: true })
+  lat: Number;
 }
 
 class Helpers {
@@ -119,3 +125,19 @@ PharmacySchema.index({ userId: 1 });
 PharmacySchema.index({ name: 1 });
 PharmacySchema.index({ 'address.city': 1, 'address.street': 1 });
 PharmacySchema.index({ 'helpers.email': 1 }, { unique: true, sparse: true });
+PharmacySchema.index({
+  'workingHours.monday.open': 1,
+  'workingHours.monday.close': 1,
+  'workingHours.tuesday.open': 1,
+  'workingHours.tuesday.close': 1,
+  'workingHours.wednesday.open': 1,
+  'workingHours.wednesday.close': 1,
+  'workingHours.thursday.open': 1,
+  'workingHours.thursday.close': 1,
+  'workingHours.friday.open': 1,
+  'workingHours.friday.close': 1,
+  'workingHours.saturday.open': 1,
+  'workingHours.saturday.close': 1,
+  'workingHours.sunday.open': 1,
+  'workingHours.sunday.close': 1,
+});
