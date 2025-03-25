@@ -1,6 +1,6 @@
 import { EmailServiceInterface } from "./interfaces/email.service.interface";
 import * as nodemailer from 'nodemailer'
-import { Inject, Injectable } from "@nestjs/common";
+import { Injectable } from "@nestjs/common";
 import * as handlebars from 'handlebars';
 import * as fs from 'fs';
 import * as path from 'path';
