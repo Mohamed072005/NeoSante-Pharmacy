@@ -20,17 +20,14 @@ jobs:
           node-version: 20.17.0
 
       - name: Install dependencies
-        working-directory: ./
         run: npm install --legacy-peer-deps
 
       - name: Run tests
-        working-directory: ./
         run: npm run test
 
   build-and-push:
     needs: test-backend
     runs-on: ubuntu-latest
-    # Now we're running this on pull requests to develop or main branches
     if: github.event_name == 'pull_request' && (github.base_ref == 'develop' || github.base_ref == 'main')
 
     steps:

@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, RequestMethod } from "@nestjs/common";
+import { Module } from "@nestjs/common";
 import { ProductController } from './product.controller';
 import { ProductService } from './product.service';
 import { MongooseModule } from "@nestjs/mongoose";
@@ -8,7 +8,6 @@ import { UserModule } from "../user/user.module";
 import { S3Service } from "../../core/services/s3.service";
 import { ProductRepository } from "./product.repository";
 import { PharmacyModule } from "../pharmacy/pharmacy.module";
-import { BodyParserMiddleware } from "../../common/middlewares/body-parser.middleware";
 
 @Module({
   imports: [
@@ -32,10 +31,4 @@ import { BodyParserMiddleware } from "../../common/middlewares/body-parser.middl
     S3Service
   ]
 })
-export class ProductModule {
-  configure(consumer: MiddlewareConsumer) {
-    consumer
-      .apply(BodyParserMiddleware)
-      .forRoutes({ path: 'update/product/:product_id', method: RequestMethod.PATCH });
-  }
-}
+export class ProductModule {}

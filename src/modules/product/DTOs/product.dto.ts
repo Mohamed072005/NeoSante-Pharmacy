@@ -22,7 +22,7 @@ export class ProductDto {
 
   @IsMongoId()
   @IsNotEmpty()
-  pharmacyId: string; // MongoDB ObjectId as string
+  pharmacyId: string;
 
   @IsOptional()
   image?: string;

@@ -12,4 +12,6 @@ export interface PharmacyRepositoryInterface {
   deletePharmacy(pharmacy_id: Types.ObjectId): Promise<PharmacyDocument>;
   getPharmacistPharmaciesWithoutPagination(user_id: Types.ObjectId): Promise<PharmacyDocument[]>;
   getPharmacistPharmacy(pharmacy_id: Types.ObjectId, user_id: Types.ObjectId): Promise<PharmacyDocument>;
+  findPharmacies(searchQuery: string): Promise<PharmacyDocument[]>;
+  getUserPharmaciesCount(user_id: Types.ObjectId): Promise<number>;
 }

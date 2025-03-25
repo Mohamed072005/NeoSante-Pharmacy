@@ -16,9 +16,7 @@ export class ProductService implements ProductServiceInterface {
     private readonly pharmacyRepository: PharmacyRepositoryInterface,
   ) {}
 
-  async handleCreateProduct(
-    productDto: ProductDto,
-  ): Promise<{ message: string }> {
+  async handleCreateProduct(productDto: ProductDto,): Promise<{ message: string }> {
     const pharmacyObjectId = toObjectId(productDto.pharmacyId);
     const product =
       await this.productRepository.findProductByPharmacyIdAndBarcodeAndName(pharmacyObjectId, productDto.barcode, productDto.name);

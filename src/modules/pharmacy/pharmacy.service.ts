@@ -17,6 +17,7 @@ import { EmailServiceInterface } from "../email/interfaces/email.service.interfa
 import { UserServiceInterface } from "../user/interfaces/user.service.interface";
 import { getChangedProperties } from "../../core/utils/object.util";
 import { S3Service } from "../../core/services/s3.service";
+import { PharmacyHelper } from "./helpers/pharmacy.helper";
 
 @Injectable()
 export class PharmacyService implements PharmacyServiceInterface {
@@ -32,6 +33,7 @@ export class PharmacyService implements PharmacyServiceInterface {
     @Inject('UserServiceInterface')
     private readonly userService: UserServiceInterface,
     private readonly s3Service: S3Service,
+    private readonly pharmacyHelper: PharmacyHelper
   ) {}
   async handleCreatePharmacy(
     createPharmacyDTO: PharmacyDto,
@@ -56,6 +58,8 @@ export class PharmacyService implements PharmacyServiceInterface {
       throw new BadRequestException(
         "You're already registered a Pharmacy, wait for Admin approval.",
       );
+    const pharmaciesCount = await this.pharmacyRepository.getUserPharmaciesCount(userObjectId);
+    if (pharmaciesCount >= 5) throw new BadRequestException("You have reach the max of pharmacies");
     const user = await this.userRepository.getUserById(userObjectId);
     if (!user || user.verified_at === null) {
       throw new BadRequestException('You should verify your account first.');
@@ -132,6 +136,8 @@ export class PharmacyService implements PharmacyServiceInterface {
         ...(pharmacy.address || {}),
         ...(updatePharmacyDTO.city && { city: updatePharmacyDTO.city }),
         ...(updatePharmacyDTO.street && { street: updatePharmacyDTO.street }),
+        ...(updatePharmacyDTO.lng && { lng: updatePharmacyDTO.lng }),
+        ...(updatePharmacyDTO.lat && { lat: updatePharmacyDTO.lat }),
       };
     }
     // Handle certifications
@@ -194,8 +200,17 @@ export class PharmacyService implements PharmacyServiceInterface {
         })
     )
 
-    const deletedPharmacy = await this.pharmacyRepository.deletePharmacy(pharmacyObjectId);
+    const deletedPharmacy =
+      await this.pharmacyRepository.deletePharmacy(pharmacyObjectId);
 
     return { message: 'Pharmacy deleted successfully.', pharmacy: deletedPharmacy as Pharmacy };
+  }
+  
+  async handleFindPharmacies(search: string, openNow: boolean): Promise<Pharmacy[]> {
+    let pharmacies =  await this.pharmacyRepository.findPharmacies(search);
+    if (openNow){
+      pharmacies = pharmacies.filter((pharmacy) => this.pharmacyHelper.isPharmacyOpen(pharmacy))
+    }
+    return pharmacies;
   }
 }

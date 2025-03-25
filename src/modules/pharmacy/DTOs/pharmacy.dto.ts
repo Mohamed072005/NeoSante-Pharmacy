@@ -1,4 +1,13 @@
-import { IsString, IsNotEmpty, IsArray, ValidateNested, IsOptional, IsDateString, IsObject } from "class-validator";
+import {
+    IsString,
+    IsNotEmpty,
+    IsArray,
+    ValidateNested,
+    IsOptional,
+    IsDateString,
+    IsObject,
+    IsNumber
+} from "class-validator";
 import { Transform, Type } from "class-transformer";
 
 class CertificationDto {
@@ -32,6 +41,16 @@ export class PharmacyDto {
     @IsString()
     @IsNotEmpty()
     city: string;
+
+    @IsNumber()
+    @Type(() => Number)
+    @IsNotEmpty()
+    lng: number;
+
+    @IsNumber()
+    @Type(() => Number)
+    @IsNotEmpty()
+    lat: number;
 
     @IsString()
     @IsNotEmpty()
