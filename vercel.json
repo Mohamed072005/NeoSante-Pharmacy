@@ -4,7 +4,7 @@
     {
       "src": "src/main.ts",
       "use": "@vercel/node",
-       "config": {
+      "config": {
         "installCommand": "npm install --legacy-peer-deps"
       }
     }
