@@ -28,7 +28,7 @@ export class UserRepository implements UserRepositoryInterface {
         .exec();
     } catch (error) {
       throw new HttpException(
-        'Failed to fetch user',
+        'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -50,7 +50,7 @@ export class UserRepository implements UserRepositoryInterface {
     } catch (error) {
       console.log(error);
       throw new HttpException(
-        'Failed to create user',
+        'Failed to create users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -62,7 +62,7 @@ export class UserRepository implements UserRepositoryInterface {
       return await this.userModel.findOne({ _id: userId }).exec();
     } catch (error) {
       throw new HttpException(
-        'Failed to fetch user',
+        'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
@@ -73,7 +73,7 @@ export class UserRepository implements UserRepositoryInterface {
       return await this.userModel.findOne({ email: email }).exec();
     } catch (error) {
       throw new HttpException(
-        'Failed to fetch user',
+        'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }

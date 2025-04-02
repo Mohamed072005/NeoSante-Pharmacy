@@ -31,7 +31,7 @@ export class PharmacyRepository implements PharmacyRepositoryInterface {
         .exec();
     } catch (err) {
       throw new HttpException(
-        'Failed to fetch user',
+        'Failed to fetch users',
         HttpStatus.INTERNAL_SERVER_ERROR,
       );
     }
