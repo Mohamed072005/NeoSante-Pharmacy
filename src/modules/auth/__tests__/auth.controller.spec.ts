@@ -94,7 +94,7 @@ describe('AuthController', () => {
   });
 
   describe('register', () => {
-    it('should register a new user successfully', async () => {
+    it('should register a new users successfully', async () => {
       // Arrange
       const registerDto: RegisterDTO = {
         email: 'test@example.com',
@@ -126,7 +126,7 @@ describe('AuthController', () => {
   });
 
   describe('verifyUserAccount', () => {
-    it('should verify a user account and redirect to frontend', async () => {
+    it('should verify a users account and redirect to frontend', async () => {
       // Arrange
       const token = 'verification-token';
       process.env.FRONT_END_URL = 'http://localhost';
@@ -146,7 +146,7 @@ describe('AuthController', () => {
   });
 
   describe('login', () => {
-    it('should login a user successfully without OTP requirement', async () => {
+    it('should login a users successfully without OTP requirement', async () => {
       // Arrange
       const loginDto: LoginDTO = {
         email: 'test@example.com',
@@ -304,7 +304,7 @@ describe('AuthController', () => {
   });
 
   describe('resetPassword', () => {
-    it('should reset user password', async () => {
+    it('should reset users password', async () => {
       // Arrange
       const resetPasswordDto: ResetPasswordPasswordDto = {
         password: 'NewPassword123!',

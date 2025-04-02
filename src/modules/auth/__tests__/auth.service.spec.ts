@@ -122,7 +122,7 @@ describe('AuthService', () => {
       role_id: new mongoose.Types.ObjectId()
     };
 
-    it('should register a new user successfully', async () => {
+    it('should register a new users successfully', async () => {
       // Arrange
       userRepository.getUserByEmailOrPhoneNumberOrCINNumber.mockResolvedValue(null);
       passwordService.hashPassword.mockResolvedValue('hashed_password');
@@ -161,7 +161,7 @@ describe('AuthService', () => {
       expect(result).toEqual({ message: 'Register Success and Verification sent' });
     });
 
-    it('should throw an exception if user already exists', async () => {
+    it('should throw an exception if users already exists', async () => {
       // Arrange
       userRepository.getUserByEmailOrPhoneNumberOrCINNumber.mockResolvedValue({
         _id: mockUserId,
@@ -178,7 +178,7 @@ describe('AuthService', () => {
       expect(userRepository.createUser).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if user creation fails', async () => {
+    it('should throw an exception if users creation fails', async () => {
       // Arrange
       userRepository.getUserByEmailOrPhoneNumberOrCINNumber.mockResolvedValue(null);
       passwordService.hashPassword.mockResolvedValue('hashed_password');
@@ -201,7 +201,7 @@ describe('AuthService', () => {
     const token = 'valid_token';
     const userId = mockUserId;
 
-    it('should verify a user account successfully', async () => {
+    it('should verify a users account successfully', async () => {
       // Arrange
       const mockUser = {
         _id: userId,
@@ -230,7 +230,7 @@ describe('AuthService', () => {
       expect(jwtHelper.VerifyJWTToken).not.toHaveBeenCalled();
     });
 
-    it('should throw an exception if user is not found', async () => {
+    it('should throw an exception if users is not found', async () => {
       // Arrange
       jwtHelper.VerifyJWTToken.mockReturnValue({ user_id: userId.toString() });
       userRepository.getUserById.mockResolvedValue(null);
@@ -421,7 +421,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw an exception for invalid credentials (user not found)', async () => {
+    it('should throw an exception for invalid credentials (users not found)', async () => {
       // Arrange
       userRepository.findUserByEmail.mockResolvedValue(null);
 
@@ -538,7 +538,7 @@ describe('AuthService', () => {
       );
     });
 
-    it('should throw an exception if user is not found', async () => {
+    it('should throw an exception if users is not found', async () => {
       // Arrange
       userRepository.getUserById.mockResolvedValue(null);
 
@@ -589,7 +589,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw an exception if user does not exist', async () => {
+    it('should throw an exception if users does not exist', async () => {
       // Arrange
       userRepository.getUserById.mockResolvedValue(null);
 
@@ -637,7 +637,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw an exception if user does not exist', async () => {
+    it('should throw an exception if users does not exist', async () => {
       // Arrange
       userRepository.findUserByEmail.mockResolvedValue(null);
 
@@ -683,7 +683,7 @@ describe('AuthService', () => {
       });
     });
 
-    it('should throw an exception if user does not exist', async () => {
+    it('should throw an exception if users does not exist', async () => {
       // Arrange
       userRepository.getUserById.mockResolvedValue(null);
 

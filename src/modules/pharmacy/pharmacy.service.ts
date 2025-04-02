@@ -97,7 +97,7 @@ export class PharmacyService implements PharmacyServiceInterface {
     const userObjectId = pharmacy.userId;
     const user = await this.userRepository.getUserById(userObjectId);
     if (!user)
-      throw new BadRequestException('This pharmacy user does not exist.');
+      throw new BadRequestException('This pharmacy users does not exist.');
     if (!pharmacy) throw new BadRequestException('Pharmacy not found.');
     if (pharmacy.verifiedAt !== null)
       throw new BadRequestException('Pharmacy already approved.');
